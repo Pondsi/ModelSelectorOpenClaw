@@ -118,7 +118,7 @@ Yes — and the footprint is deliberately tiny:
 Re-run the same command. It is idempotent and re-injects; nothing to clean up first.
 
 On Windows you can make this automatic: the GitHub package ships
-[`platform/pcl-watchdog.ps1`](platform/README.md), which detects the wipe and re-runs the
+[`platform/pcl-watchdog.ps1`](https://github.com/Pondsi/ModelSelectorOpenClaw/blob/main/platform/README.md), which detects the wipe and re-runs the
 installer (scheduled task `BigLobster-PclModelPickerRepair`). The browser side then reloads
 by itself, so an upgrade heals with no manual step.
 
@@ -236,7 +236,7 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1 -Remove
 
 重跑同一条命令即可，脚本幂等。
 
-Windows 上可以让它全自动：GitHub 包自带 [`platform/pcl-watchdog.ps1`](platform/README.md)，
+Windows 上可以让它全自动：GitHub 包自带 [`platform/pcl-watchdog.ps1`](https://github.com/Pondsi/ModelSelectorOpenClaw/blob/main/platform/README.md)，
 发现注入被覆盖就自动重跑安装器（计划任务 `BigLobster-PclModelPickerRepair`）；浏览器端再
 自行重载，升级后无需任何手动操作。
 
