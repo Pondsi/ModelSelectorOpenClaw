@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.log
+
+# Publish staging (generated per release, never committed)
+_publish_core/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# Local scratch
+tmp/

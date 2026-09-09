@@ -19,12 +19,11 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$jsName = 'pcl-model-picker.v4.js'
+$jsName = 'pcl-model-picker.v5.js'
 $srcDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $marker = 'pcl-model-picker'
-$tag    = "<script defer src=`"./assets/$jsName`"></script><!-- $marker -->"
-# 兼容任意历史版本号的注入标签（升级脚本时自动原位替换）
-$tagPattern = '<script defer src="\./assets/pcl-model-picker\.v\d+\.js"></script><!-- pcl-model-picker -->'
+# 兼容任意历史版本号（以及带/不带内容指纹）的注入标签，升级脚本时自动原位替换
+$tagPattern = '<script defer src="\./assets/pcl-model-picker\.v\d+\.js(\?h=[0-9a-f]{8})?"></script><!-- pcl-model-picker -->'
 
 function Find-ControlUiDir {
     param([string]$Explicit)
@@ -81,6 +80,12 @@ if ($Remove) {
 }
 
 if (-not (Test-Path (Join-Path $srcDir $jsName))) { throw "缺少增强脚本 $jsName（应与 pcl-patch.ps1 同目录）" }
+
+# 内容指纹：Control UI 的 Service Worker 对 /assets/ 是 cache-first、HTTP 缓存 immutable，
+# 同名改内容会被旧缓存永久钉死（v4 就是这样静默失效的）。把内容哈希放进 URL 查询串后，
+# 内容一变缓存键就变，浏览器立即取到新脚本，不必再靠人工升文件名。
+$fingerprint = (Get-FileHash (Join-Path $srcDir $jsName) -Algorithm SHA256).Hash.Substring(0, 8).ToLower()
+$tag = '<script defer src="./assets/' + $jsName + '?h=' + $fingerprint + '"></script><!-- ' + $marker + ' -->'
 
 # 1) 拷贝增强脚本到 assets（带版本号文件名：Control UI 的 Service Worker 对 /assets/ 是
 #    cache-first，内容变更必须换新文件名，否则浏览器永远吃旧缓存）
