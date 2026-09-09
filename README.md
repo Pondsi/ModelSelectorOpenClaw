@@ -6,7 +6,7 @@
 <img alt="license" src="https://img.shields.io/badge/license-MIT-blue">
 <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20pwsh-lightgrey">
 <img alt="hosts" src="https://img.shields.io/badge/hosts-dsh%20%7C%20OpenClaw%20%7C%20Claude%20Code%20%7C%20Cursor-informational">
-<img alt="version" src="https://img.shields.io/badge/version-1.1.1-green">
+<img alt="version" src="https://img.shields.io/badge/version-1.2.0-green">
 </p>
 
 [English](#english) | [简体中文](#简体中文) | [繁體中文](#繁體中文) | [한국어](#한국어) | [Русский](#русский) | [日本語](#日本語) | [Español](#español) | [Français](#français)
@@ -63,6 +63,8 @@ It adds a **provider navigation column** to the picker and keeps the right side 
 - **Responsive.** The provider column narrows with `clamp(84px, 26%, 132px)`; the native
   flat list returns only below 340px viewport width or while the official search filter is
   active.
+- **Self-updating.** An already-open tab notices server-side updates on its own and reloads
+  (never downgrades, never interrupts typing) — a patched install never looks stale.
 
 ### Install
 
@@ -74,8 +76,8 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1
 
 The script auto-detects the Control UI directory (npm root -g, common prefixes, the
 `openclaw` CLI on PATH). Non-standard layout: `-Dist "<...>\dist\control-ui"`.
-When it prints `[PCL] 完成` / `Done`, reload the Control UI tab (F5 is enough) and open the
-model picker.
+When it prints `[PCL] 完成` / `Done`, reload the Control UI tab once and open the model
+picker. After that, future patches are picked up automatically (see *Self-updating*).
 
 ### Verify
 
@@ -87,7 +89,7 @@ window.pclModelPickerDiag()
 
 Expect `state: "two-col"`, `railFound: true`, `chips` = provider count + 1, `twoCol: true`.
 `fallback-narrow` means the viewport is below 340px; `fallback-filter` means the official
-search box is filtering.
+search box is filtering. Force an update check with `await window.pclModelPickerCheckUpdate()`.
 
 ### Uninstall
 
@@ -102,7 +104,7 @@ Yes — and the footprint is deliberately tiny:
 | Operation | Scope control |
 |-----------|---------------|
 | Append/replace **one** `<script>` line in `index.html` | first run backs up `index.html.bak-pcl`; idempotent; `-Remove` reverts |
-| Copy `pcl-model-picker.v5.js` into `assets/` | versioned filename + content fingerprint in the URL |
+| Copy `pcl-model-picker.v6.js` into `assets/` | versioned filename + content fingerprint in the URL |
 | Delete older `pcl-model-picker.v*.js` | keeps the newest **two**, deletes only that pattern |
 
 - **No packaged code is modified** — no OpenClaw JS/CSS/service-worker file is touched.
@@ -121,7 +123,7 @@ Re-run the same command. It is idempotent and re-injects; nothing to clean up fi
 |---|---|---|
 | Contents | Full project (skill + `.github/` templates) | Portable core (`SKILL.md`, docs, `scripts/`, `sponsors/`) |
 | Use when | You want the repo, issue templates, history | Your agent installs skills from ClawHub |
-| Version | Same tag (`v1.1.1`) | Same tag (`v1.1.1`) |
+| Version | Same tag (`v1.2.0`) | Same tag (`v1.2.0`) |
 
 Both contain the same installer and enhancement script; the GitHub repo additionally ships
 GitHub-only files (issue templates, security policy).
@@ -175,6 +177,8 @@ MIT with **mandatory attribution** — any use, including modified variants, mus
 - **零自激**：所有 DOM 写操作带状态门控，不会触发观察器死循环。
 - **响应式**：左列宽度 `clamp(84px, 26%, 132px)` 自适应；只有视口低于 340px 或官方
   搜索过滤时才退回原生布局。
+- **自更新**：已经打开的标签页会自己发现服务端更新并自动重载（不降级、不打断输入），
+  打完补丁不会再出现「看着像没生效」。
 
 ### 安装
 
@@ -185,8 +189,8 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1
 ```
 
 脚本自动检测 Control UI 目录（npm 全局 root / 常见前缀 / PATH 中的 openclaw CLI）；
-非标准布局加 `-Dist "<...>\dist\control-ui"`。看到 `[PCL] 完成` 后，刷新控制台页面
-（**F5 即可**），打开模型选择器就是双列。
+非标准布局加 `-Dist "<...>\dist\control-ui"`。看到 `[PCL] 完成` 后，刷新一次控制台页面
+即可；此后的补丁会被已打开的页面**自动感知并重载**（见「自更新」）。
 
 ### 验证（一行）
 
@@ -198,6 +202,7 @@ window.pclModelPickerDiag()
 
 期望 `state: "two-col"`、`railFound: true`、`chips` = 供应商数 + 1、`twoCol: true`。
 若显示 `fallback-narrow` 说明视口小于 340px；`fallback-filter` 说明官方搜索框正在过滤。
+强制检查更新：`await window.pclModelPickerCheckUpdate()`。
 
 ### 卸载
 
@@ -212,7 +217,7 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1 -Remove
 | 操作 | 范围控制 |
 |------|----------|
 | 在 `index.html` 末尾追加/替换**一行** `<script>` | 首次运行备份 `index.html.bak-pcl`；幂等；`-Remove` 还原 |
-| 向 `assets/` 复制 `pcl-model-picker.v5.js` | 带版本号文件名 + URL 内容指纹 |
+| 向 `assets/` 复制 `pcl-model-picker.v6.js` | 带版本号文件名 + URL 内容指纹 |
 | 清理旧版本 js | 只删 `pcl-model-picker.v*.js`，**保留最近两版** |
 
 - **不修改** OpenClaw 任何打包代码（JS/CSS/Service Worker 全部原样）
@@ -231,7 +236,7 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1 -Remove
 |---|---|---|
 | 内容 | 完整项目（技能 + `.github/` 模板） | 可移植核心（`SKILL.md`、文档、`scripts/`、`sponsors/`） |
 | 适合 | 想看仓库、提 issue、跟历史 | Agent 从 ClawHub 装技能 |
-| 版本 | 同一 tag（`v1.1.1`） | 同一 tag（`v1.1.1`） |
+| 版本 | 同一 tag（`v1.2.0`） | 同一 tag（`v1.2.0`） |
 
 两者含相同的安装脚本与增强脚本；GitHub 仓库额外包含 GitHub 专属文件（issue 模板、安全策略）。
 

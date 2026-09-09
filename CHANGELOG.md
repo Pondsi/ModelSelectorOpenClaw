@@ -4,6 +4,33 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-09-09
+
+### Added
+
+- **Self-update watchdog.** An already-open Control UI tab keeps running the script it
+  loaded, so a freshly patched server looked "unpatched" until the user reloaded by hand
+  (symptom: click the picker → still the old layout; refresh → new layout). The enhancement
+  now fetches the app shell (`./`, a network-first path the Service Worker never caches)
+  30s after load and then every 5 minutes, parses the injected tag's version and content
+  fingerprint, and reloads the page automatically when the server is newer.
+  - Never downgrades: an older served build is ignored.
+  - Loop-safe: the attempted build is recorded in `sessionStorage`.
+  - Non-disruptive: waits while an input/textarea is focused (retries in 60s); background
+    tabs reload immediately.
+  - Manual check: `await window.pclModelPickerCheckUpdate()`.
+
+### Changed
+
+- Enhancement file is now `pcl-model-picker.v6.js`; `window.pclModelPickerDiag()` also
+  reports `selfFp` (the content fingerprint the running script was loaded with).
+
+### Verified
+
+- End-to-end in a real authenticated Control UI: with the page open on v6, deploying v7
+  server-side caused an automatic reload within ~25s and the picker came up as v7 with the
+  two-column layout intact; reverting the server to v6 did **not** downgrade the page.
+
 ## [1.1.1] - 2026-09-09
 
 ### Changed

@@ -1,23 +1,19 @@
 /*!
- * PCL Model Picker Enhancer v5
+ * PCL Model Picker Enhancer v6
  * 作用：把 OpenClaw Control UI 聊天输入框的模型选择器（官方扁平分组列表）
  *       增强为「左列供应商导航 + 右列仅显示该供应商模型」的 master-detail 布局。
  *
- * v5 变更（修复「增强突然消失」的静默失效）：
- *  1) 窄屏阈值 520 → 340，且左列宽度改为 clamp(84px, 26%, 132px) 响应式。
- *     根因：高 DPI 缩放 / 窄窗口 / 分屏会让 innerWidth 掉到 520 以下，
- *     旧逻辑此时会静默 clearFilterState() 退回原生布局 —— 用户看到的就是
- *     「增强消失、恢复原样」，且没有任何提示。现在只有真正的极窄屏才回退。
- *  2) 状态可观测：<html data-pcl-model-picker="v5">、菜单 data-pcl-state
- *     = two-col / fallback-narrow / fallback-filter，window.pclModelPickerDiag()
- *     一行返回诊断结果 —— 以后「怎么又没了」可直接查，不再靠猜。
- *  3) 菜单查找加兜底：优先 picker 内查找，找不到则全文档查找（防官方改为
- *     顶层浮层 / portal 渲染后静默失效）。
- *  4) 文件名 v4→v5 + 注入 URL 追加内容指纹 ?h=<sha256前8位>（见 pcl-patch.ps1）：
- *     Control UI Service Worker 对 /assets/ 是 cache-first 且 HTTP 缓存
- *     immutable，同名改内容必然被旧缓存钉死（v4 就是这样踩的坑）。指纹让
- *     每次内容变更都是新的缓存键，浏览器立即取到新脚本。
+ * v6 变更（修复「已经打开的页面看不到新版本，必须手动刷新」）：
+ *  浏览器标签页里跑的是「加载那一刻」的脚本；服务端打了补丁、浏览器没重新取 HTML，
+ *  页面就会一直用旧脚本（表现：点了还是旧样式，刷新后才生效）。v6 自带自更新看门狗：
+ *  定期同源拉取 index.html（SW 对非 /assets/ 路径是 network-first，永远新鲜），
+ *  解析注入标签里的版本号 + 内容指纹，发现服务端更新就自动重载页面。
+ *  - 只比「更新」，绝不降级；用 sessionStorage 记录已尝试的构建，杜绝重载循环。
+ *  - 正在输入框打字时不打断：等用户停手 60 秒后再重载；后台标签页立即重载。
+ *  - 手动触发：控制台执行 await window.pclModelPickerCheckUpdate()。
  *
+ * v5 变更：窄屏阈值 520→340 + 左列 clamp 响应式；注入 URL 加内容指纹 ?h=；
+ *          data-pcl-state / window.pclModelPickerDiag() 可诊断；菜单查找兜底。
  * v4 变更：隐藏官方「此聊天使用的账户」账号控件（.chat-model-account）。
  * v3.1 变更：修复自激循环——所有 DOM 写操作先查状态，无变化则零写入。
  * v3 变更：CSS Grid 结构性双列 + 两列独立滚动 + 官方设计 token 主题跟随。
@@ -29,7 +25,9 @@
 (() => {
   'use strict';
   if (window.__PCL_MODEL_PICKER__) return;
-  const VERSION = '5';
+  const VERSION = '6';
+  const SELF_URL = (document.currentScript && document.currentScript.src) || '';
+  const SELF_FP = (SELF_URL.match(/\?h=([0-9a-f]{8})/) || [])[1] || '';
   window.__PCL_MODEL_PICKER__ = VERSION;
 
   const PICKER_SEL = 'details.chat-controls__inline-select.chat-controls__model-picker';
@@ -41,6 +39,9 @@
   const ACTIVE_CLS = 'pcl-active-group';
   const FILTERED_CLS = 'pcl-filtered';
   const MIN_WIDTH = 340; // 仅真正的极窄屏才退回官方原生布局（旧值 520 会误伤窄窗口/高 DPI 缩放）
+  const TAG_RE = /pcl-model-picker\.v(\d+)\.js\?h=([0-9a-f]{8})/;
+  const POLL_MS = 5 * 60 * 1000;
+  const RELOAD_GUARD = 'pcl-model-picker-reload-target';
 
   const CSS = `
   /* ===== Grid 结构性双列：rail 与 options 平级，互不重叠、各自滚动 ===== */
@@ -292,6 +293,47 @@
     markState(menu, 'two-col');
   }
 
+  // ===== v6 自更新看门狗 =====
+  // 服务端打了新补丁时，已打开的页面不会自己知道（脚本是加载那一刻的）。
+  // 这里定期同源拉取 index.html（SW 对非 /assets/ 是 network-first，永远新鲜），
+  // 比对注入标签的版本号 + 内容指纹，发现更新就自动重载页面。
+  function parseBuild(html) {
+    const m = TAG_RE.exec(html || '');
+    return m ? { version: m[1], fp: m[2] } : null;
+  }
+
+  async function checkUpdate() {
+    try {
+      const res = await fetch('./', { cache: 'no-store', credentials: 'same-origin' });
+      if (!res.ok) return { current: VERSION, served: null, updateAvailable: false, error: 'http ' + res.status };
+      const served = parseBuild(await res.text());
+      if (!served) return { current: VERSION, served: null, updateAvailable: false, error: 'injected tag not found' };
+      const newer =
+        Number(served.version) > Number(VERSION) ||
+        (served.version === VERSION && !!SELF_FP && !!served.fp && served.fp !== SELF_FP);
+      return { current: VERSION, currentFp: SELF_FP, served, updateAvailable: newer };
+    } catch (e) {
+      return { current: VERSION, served: null, updateAvailable: false, error: String((e && e.message) || e) };
+    }
+  }
+
+  function applyUpdate(target) {
+    const key = target.version + '.' + target.fp;
+    try {
+      if (sessionStorage.getItem(RELOAD_GUARD) === key) return; // 已为此构建重载过，防循环
+      sessionStorage.setItem(RELOAD_GUARD, key);
+    } catch (e) { /* sessionStorage 不可用时继续，最多多载一次 */ }
+    const el = document.activeElement;
+    const typing = !!(el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable));
+    if (document.visibilityState === 'hidden' || !typing) { location.reload(); return; }
+    setTimeout(() => applyUpdate(target), 60000); // 用户正在输入：等停手再重载
+  }
+
+  async function updateTick() {
+    const r = await checkUpdate();
+    if (r.updateAvailable && r.served) applyUpdate(r.served);
+  }
+
   // 样式注入（一次；重跑本脚本时替换旧内容，保证幂等）
   const oldStyle = document.getElementById('pcl-model-picker-style');
   if (oldStyle) oldStyle.remove();
@@ -308,6 +350,7 @@
     const options = menu ? menu.querySelector(OPTIONS_SEL) : null;
     return {
       version: VERSION,
+      selfFp: SELF_FP,
       innerWidth: window.innerWidth,
       minWidth: MIN_WIDTH,
       pickerFound: !!picker,
@@ -320,6 +363,13 @@
       chips: menu ? menu.querySelectorAll('.pcl-rail__chip').length : 0,
       twoCol: menu ? menu.classList.contains('pcl-two-col') : false
     };
+  };
+
+  // 手动检查更新：控制台 await window.pclModelPickerCheckUpdate()
+  window.pclModelPickerCheckUpdate = async function () {
+    const r = await checkUpdate();
+    if (r.updateAvailable && r.served) applyUpdate(r.served);
+    return r;
   };
 
   // details 展开/收起：打开时自动跟随当前选中模型
@@ -355,4 +405,8 @@
     attributeFilter: ['open', 'data-chat-model-filtering', 'class', 'hidden'],
   });
   schedule();
+
+  // 启动 30 秒后先查一次（覆盖「刚打完补丁就打开页面」），之后每 5 分钟一次
+  setTimeout(updateTick, 30000);
+  setInterval(updateTick, POLL_MS);
 })();

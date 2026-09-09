@@ -6,7 +6,7 @@ compatibility: "Any host that loads a standard SKILL.md and can run PowerShell 5
 allowed-tools: Bash Read Write
 metadata:
   author: "Pondsi"
-  version: "1.1.1"
+  version: "1.2.0"
   attribution: "Pondsi - attribution is mandatory for any use, including modified variants"
   license: "MIT"
 ---
@@ -42,6 +42,8 @@ picker with a provider navigation column**:
 - **Responsive**: the provider column narrows with `clamp(84px, 26%, 132px)`; the native
   flat list is used only below 340px viewport width or while the official search filter
   is active.
+- **Self-updating**: an already-open tab notices server-side updates by itself and reloads
+  (never downgrades, never interrupts typing), so a patched install never looks stale.
 
 > ## Disclosure (Intended Behavior)
 >
@@ -52,7 +54,7 @@ picker with a provider navigation column**:
 > | Operation | Scope control |
 > |-----------|---------------|
 > | Append/replace ONE `<script>` line at the end of `index.html` | first run saves `index.html.bak-pcl` next to it; idempotent; `-Remove` reverts |
-> | Copy `pcl-model-picker.v5.js` into `assets/` | versioned filename + content fingerprint in the URL |
+> | Copy `pcl-model-picker.v6.js` into `assets/` | versioned filename + content fingerprint in the URL |
 > | Delete older `pcl-model-picker.v*.js` files | keeps the latest TWO versions, deletes only files matching `pcl-model-picker.v*.js` |
 >
 > Nothing else is touched: no packaged JS/CSS/SW files are modified, no network access,
@@ -71,8 +73,9 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1
 - The script auto-detects the Control UI directory (npm root -g, common prefixes, or the
   `openclaw` CLI on PATH). Non-standard layout: pass `-Dist "<...>\dist\control-ui"`.
 - Done when it prints `[PCL] 完成` / `Done` plus the injected tag line.
-- Then reload the Control UI tab (**F5 is enough**; the injected URL carries a content
-  fingerprint, so a normal reload fetches the new script).
+- Then reload the Control UI tab once (**F5 is enough**). From this version on, later patches
+  are picked up automatically: the injected script polls the app shell and reloads the tab
+  when the server is newer (never downgrades, never interrupts typing).
 - Verify: open the chat model picker — provider chips on the left, that provider's models
   on the right, no account row above the list.
 
@@ -84,9 +87,10 @@ In the Control UI browser console:
 window.pclModelPickerDiag()
 ```
 
-Returns `{version, innerWidth, pickerFound, menuFound, state, sections, railFound, chips, twoCol}`.
+Returns `{version, selfFp, innerWidth, pickerFound, menuFound, state, sections, railFound, chips, twoCol}`.
 `state` is `two-col` when active, `fallback-narrow` below 340px, `fallback-filter` while the
-official search filter is on. The document also carries `<html data-pcl-model-picker="v5">`.
+official search filter is on. The document also carries `<html data-pcl-model-picker="v6">`.
+To force an update check: `await window.pclModelPickerCheckUpdate()`.
 
 ## After an OpenClaw upgrade
 
@@ -106,15 +110,18 @@ Removes the tag from `index.html` and all `pcl-model-picker.v*.js` assets. The b
 
 Control UI's Service Worker is **cache-first for `/assets/`** and the HTTP response is
 `immutable`. The installer therefore puts a content fingerprint in the injected URL
-(`./assets/pcl-model-picker.v5.js?h=<sha256-8>`) and bumps the filename on content changes.
-If you edit the JS yourself, either re-run `pcl-patch.ps1` (it recomputes the fingerprint)
-or rename the file to the next version. Skipping this leaves browsers on the stale script.
+(`./assets/pcl-model-picker.v6.js?h=<sha256-8>`) and bumps the filename on content changes.
+If you edit the JS yourself, re-run `pcl-patch.ps1` (it recomputes the fingerprint) or rename
+the file to the next version. Since 1.2.0 a missed reload is self-healing: open tabs detect
+the newer build and reload themselves.
 
 ## Troubleshooting
 
 - **Picker looks default again after it worked**: check `window.pclModelPickerDiag()`.
   `state: "fallback-narrow"` means the viewport is below 340px (zoom/high DPI/split view);
-  no `state` means the injected script is not running — re-run the patch script, then reload.
+  no `state` means the injected script is not running — re-run the patch script. If the
+  server was patched but the tab is old, the tab reloads itself within ~5 minutes (or run
+  `await window.pclModelPickerCheckUpdate()`).
 - **Enhancement gone after an OpenClaw upgrade**: npm restored the stock `index.html`.
   Re-run the patch script, then reload.
 - **Layout changes did not apply after editing the JS**: the fingerprint/version rule above
@@ -122,12 +129,12 @@ or rename the file to the next version. Skipping this leaves browsers on the sta
 - **Script cannot find the Control UI**: pass `-Dist` explicitly. On Linux/macOS use pwsh
   and the POSIX candidate paths (already built in).
 - **Restock check**: `Select-String pcl-model-picker <dist>\index.html` should show exactly
-  one `<script defer src="./assets/pcl-model-picker.v5.js?h=…">` line.
+  one `<script defer src="./assets/pcl-model-picker.v6.js?h=…">` line.
 
 ## Files
 
 - `scripts/pcl-patch.ps1` — idempotent installer/remover (auto-detects the install dir)
-- `scripts/pcl-model-picker.v5.js` — the browser-side enhancement (IIFE, no dependencies)
+- `scripts/pcl-model-picker.v6.js` — the browser-side enhancement (IIFE, no dependencies)
 
 MIT License with mandatory attribution — credit **Pondsi**. See [LICENSE](LICENSE).
 

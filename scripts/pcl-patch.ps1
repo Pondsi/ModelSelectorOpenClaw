@@ -19,7 +19,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$jsName = 'pcl-model-picker.v5.js'
+$jsName = 'pcl-model-picker.v6.js'
 $srcDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $marker = 'pcl-model-picker'
 # 兼容任意历史版本号（以及带/不带内容指纹）的注入标签，升级脚本时自动原位替换
