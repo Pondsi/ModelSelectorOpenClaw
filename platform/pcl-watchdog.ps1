@@ -11,6 +11,8 @@
 #   powershell -ExecutionPolicy Bypass -File pcl-watchdog.ps1 -Check       # report only, exit 0/10
 #   powershell -ExecutionPolicy Bypass -File pcl-watchdog.ps1 -Repair      # check and repair if needed
 #   powershell -ExecutionPolicy Bypass -File pcl-watchdog.ps1 -Install     # register the scheduled task
+#                                     (launched through the bundled pcl-run-hidden.vbs,
+#                                      so no console window ever flashes)
 #   powershell -ExecutionPolicy Bypass -File pcl-watchdog.ps1 -Uninstall   # remove the scheduled task
 #   powershell -ExecutionPolicy Bypass -File pcl-watchdog.ps1 -Status      # show task + last log lines
 #
@@ -130,7 +132,7 @@ function Test-Injection {
 function Invoke-Repair {
     param([string]$ControlUiDir)
     if (-not (Test-Path $patchScript)) { throw "installer not found: $patchScript" }
-    $out = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $patchScript -Dist $ControlUiDir 2>&1
+    $out = & powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File $patchScript -Dist $ControlUiDir 2>&1
     return ($out | Out-String).Trim()
 }
 
@@ -151,9 +153,15 @@ if ($Uninstall) {
 }
 
 if ($Install) {
-    $exe = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-    $self = $MyInvocation.MyCommand.Path
-    $argument = '-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "{0}" -Repair -Quiet' -f $self
+    # Launch through the bundled VBS wrapper: a scheduled task that runs powershell.exe
+    # directly makes Task Scheduler allocate a console window that can flash on screen
+    # every cycle. wscript.exe is a GUI-subsystem host (no console) and
+    # WshShell.Run(..., 0, ...) keeps the PowerShell window hidden, so the task is
+    # completely invisible.
+    $launcher = Join-Path $scriptDir 'pcl-run-hidden.vbs'
+    if (-not (Test-Path $launcher)) { throw "silent launcher not found: $launcher" }
+    $exe = Join-Path $env:SystemRoot 'System32\wscript.exe'
+    $argument = '//B //nologo "{0}"' -f $launcher
     $ok = $false
     try {
         $action = New-ScheduledTaskAction -Execute $exe -Argument $argument
