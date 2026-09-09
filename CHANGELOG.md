@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] - 2026-09-09
+
+### Changed
+
+- Updated the attribution signature to `Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) — automatically committed by OpenClaw` across `README.md`, `SKILL.md`, `说明.md`, `SPONSORS.md` and this changelog.
+
 ## [1.1.0] - 2026-09-09
 
 ### Changed
@@ -76,4 +82,4 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-Pondsi (+MiMo-v2.5/v2.5pro+deepseek-v4-flash/pro+deepseek-v4.1-flash-expires-on-0910+GLM5.3-flash+Gemini3.1-pro+Qwen3.8-27b+Gemini3.8-flash) — automatically committed by OpenClaw
+Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) — automatically committed by OpenClaw

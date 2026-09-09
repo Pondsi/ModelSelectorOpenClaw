@@ -6,7 +6,7 @@
 <img alt="license" src="https://img.shields.io/badge/license-MIT-blue">
 <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20pwsh-lightgrey">
 <img alt="hosts" src="https://img.shields.io/badge/hosts-dsh%20%7C%20OpenClaw%20%7C%20Claude%20Code%20%7C%20Cursor-informational">
-<img alt="version" src="https://img.shields.io/badge/version-1.1.0-green">
+<img alt="version" src="https://img.shields.io/badge/version-1.1.1-green">
 </p>
 
 [English](#english) | [简体中文](#简体中文) | [繁體中文](#繁體中文) | [한국어](#한국어) | [Русский](#русский) | [日本語](#日本語) | [Español](#español) | [Français](#français)
@@ -121,7 +121,7 @@ Re-run the same command. It is idempotent and re-injects; nothing to clean up fi
 |---|---|---|
 | Contents | Full project (skill + `.github/` templates) | Portable core (`SKILL.md`, docs, `scripts/`, `sponsors/`) |
 | Use when | You want the repo, issue templates, history | Your agent installs skills from ClawHub |
-| Version | Same tag (`v1.1.0`) | Same tag (`v1.1.0`) |
+| Version | Same tag (`v1.1.1`) | Same tag (`v1.1.1`) |
 
 Both contain the same installer and enhancement script; the GitHub repo additionally ships
 GitHub-only files (issue templates, security policy).
@@ -231,7 +231,7 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1 -Remove
 |---|---|---|
 | 内容 | 完整项目（技能 + `.github/` 模板） | 可移植核心（`SKILL.md`、文档、`scripts/`、`sponsors/`） |
 | 适合 | 想看仓库、提 issue、跟历史 | Agent 从 ClawHub 装技能 |
-| 版本 | 同一 tag（`v1.1.0`） | 同一 tag（`v1.1.0`） |
+| 版本 | 同一 tag（`v1.1.1`） | 同一 tag（`v1.1.1`） |
 
 两者含相同的安装脚本与增强脚本；GitHub 仓库额外包含 GitHub 专属文件（issue 模板、安全策略）。
 
@@ -351,4 +351,4 @@ sections **[English](#english)** et **[简体中文](#简体中文)** (commandes
 
 See [SPONSORS.md](SPONSORS.md) · MIT License with mandatory attribution — see [LICENSE](LICENSE).
 
-Pondsi (+MiMo-v2.5/v2.5pro+deepseek-v4-flash/pro+deepseek-v4.1-flash-expires-on-0910+GLM5.3-flash+Gemini3.1-pro+Qwen3.8-27b+Gemini3.8-flash) — automatically committed by OpenClaw
+Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) — automatically committed by OpenClaw

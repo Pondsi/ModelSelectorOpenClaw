@@ -6,7 +6,7 @@ compatibility: "Any host that loads a standard SKILL.md and can run PowerShell 5
 allowed-tools: Bash Read Write
 metadata:
   author: "Pondsi"
-  version: "1.1.0"
+  version: "1.1.1"
   attribution: "Pondsi - attribution is mandatory for any use, including modified variants"
   license: "MIT"
 ---
@@ -131,4 +131,4 @@ or rename the file to the next version. Skipping this leaves browsers on the sta
 
 MIT License with mandatory attribution — credit **Pondsi**. See [LICENSE](LICENSE).
 
-Pondsi (+MiMo-v2.5/v2.5pro+deepseek-v4-flash/pro+deepseek-v4.1-flash-expires-on-0910+GLM5.3-flash+Gemini3.1-pro+Qwen3.8-27b+Gemini3.8-flash) — automatically committed by OpenClaw
+Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) — automatically committed by OpenClaw
