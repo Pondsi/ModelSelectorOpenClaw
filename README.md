@@ -6,7 +6,7 @@
 <img alt="license" src="https://img.shields.io/badge/license-MIT-blue">
 <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20pwsh-lightgrey">
 <img alt="hosts" src="https://img.shields.io/badge/hosts-dsh%20%7C%20OpenClaw%20%7C%20Claude%20Code%20%7C%20Cursor-informational">
-<img alt="version" src="https://img.shields.io/badge/version-1.3.0-green">
+<img alt="version" src="https://img.shields.io/badge/version-1.4.0-green">
 </p>
 
 [English](#english) | [简体中文](#简体中文) | [繁體中文](#繁體中文) | [한국어](#한국어) | [Русский](#русский) | [日本語](#日本語) | [Español](#español) | [Français](#français)
@@ -87,9 +87,12 @@ Browser console, one line:
 window.pclModelPickerDiag()
 ```
 
-Expect `state: "two-col"`, `railFound: true`, `chips` = provider count + 1, `twoCol: true`.
-`fallback-narrow` means the viewport is below 340px; `fallback-filter` means the official
-search box is filtering. Force an update check with `await window.pclModelPickerCheckUpdate()`.
+Expect a rendered instance with `state: "two-col"`, `rail: true`, `chips` = provider count + 1,
+`twoCol: true`, and `stylePresent: true`.
+`two-col-filtering` means the official search box is filtering (layout stays two-column);
+`fallback-narrow` means the viewport is below 340px.
+Self-heal events: `window.pclModelPickerLog()`. Force an update check with
+`await window.pclModelPickerCheckUpdate()`.
 
 ### Uninstall
 
@@ -104,7 +107,7 @@ Yes — and the footprint is deliberately tiny:
 | Operation | Scope control |
 |-----------|---------------|
 | Append/replace **one** `<script>` line in `index.html` | first run backs up `index.html.bak-pcl`; idempotent; `-Remove` reverts |
-| Copy `pcl-model-picker.v6.js` into `assets/` | versioned filename + content fingerprint in the URL |
+| Copy `pcl-model-picker.v7.js` into `assets/` | versioned filename + content fingerprint in the URL |
 | Delete older `pcl-model-picker.v*.js` | keeps the newest **two**, deletes only that pattern |
 
 - **No packaged code is modified** — no OpenClaw JS/CSS/service-worker file is touched.
@@ -128,7 +131,7 @@ by itself, so an upgrade heals with no manual step.
 |---|---|---|
 | Contents | Full project (skill + `platform/` watchdog + `.github/` templates) | Portable core (`SKILL.md`, docs, `scripts/`, `sponsors/`) |
 | Use when | You want the repo, auto-repair, issue templates, history | Your agent installs skills from ClawHub |
-| Version | Same tag (`v1.3.0`) | Same tag (`v1.3.0`) |
+| Version | Same tag (`v1.4.0`) | Same tag (`v1.4.0`) |
 
 Both contain the same installer and enhancement script; the GitHub repo additionally ships
 Windows-only tooling (the auto-repair watchdog) and GitHub-only files (issue templates,
@@ -206,9 +209,9 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1
 window.pclModelPickerDiag()
 ```
 
-期望 `state: "two-col"`、`railFound: true`、`chips` = 供应商数 + 1、`twoCol: true`。
-若显示 `fallback-narrow` 说明视口小于 340px；`fallback-filter` 说明官方搜索框正在过滤。
-强制检查更新：`await window.pclModelPickerCheckUpdate()`。
+期望已渲染实例显示 `state: "two-col"`、`rail: true`、`chips` = 供应商数 + 1、`twoCol: true`、`stylePresent: true`。
+`two-col-filtering` 表示官方搜索框正在过滤（仍保持双列）；`fallback-narrow` 表示视口小于 340px。
+自愈事件：`window.pclModelPickerLog()`。强制检查更新：`await window.pclModelPickerCheckUpdate()`。
 
 ### 卸载
 
@@ -223,7 +226,7 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1 -Remove
 | 操作 | 范围控制 |
 |------|----------|
 | 在 `index.html` 末尾追加/替换**一行** `<script>` | 首次运行备份 `index.html.bak-pcl`；幂等；`-Remove` 还原 |
-| 向 `assets/` 复制 `pcl-model-picker.v6.js` | 带版本号文件名 + URL 内容指纹 |
+| 向 `assets/` 复制 `pcl-model-picker.v7.js` | 带版本号文件名 + URL 内容指纹 |
 | 清理旧版本 js | 只删 `pcl-model-picker.v*.js`，**保留最近两版** |
 
 - **不修改** OpenClaw 任何打包代码（JS/CSS/Service Worker 全部原样）
@@ -246,7 +249,7 @@ Windows 上可以让它全自动：GitHub 包自带 [`platform/pcl-watchdog.ps1`
 |---|---|---|
 | 内容 | 完整项目（技能 + `platform/` 看门狗 + `.github/` 模板） | 可移植核心（`SKILL.md`、文档、`scripts/`、`sponsors/`） |
 | 适合 | 想看仓库、要自动修复、提 issue、跟历史 | Agent 从 ClawHub 装技能 |
-| 版本 | 同一 tag（`v1.3.0`） | 同一 tag（`v1.3.0`） |
+| 版本 | 同一 tag（`v1.4.0`） | 同一 tag（`v1.4.0`） |
 
 两者含相同的安装脚本与增强脚本；GitHub 仓库额外包含 Windows 专属工具（自动修复看门狗）与
 GitHub 专属文件（issue 模板、安全策略）。

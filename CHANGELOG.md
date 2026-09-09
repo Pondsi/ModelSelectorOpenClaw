@@ -4,6 +4,57 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2026-09-10
+
+### Fixed
+
+- **The enhancement could silently revert to the stock flat list while the page stayed
+  open, until a manual reload.** Root cause: the pass resolved its target with
+  `document.querySelector(...)`, so it always enhanced the **first** matching instance in
+  document order. The Control UI can mount more than one composer instance (main chat,
+  side/session views, cached views), and the official code explicitly handles several
+  coexisting pickers. As soon as a hidden instance appeared earlier in the DOM, the
+  enhancement was applied to the hidden one and the visible picker fell back to the
+  official layout. A reload remounted the app and restored the order, which is why
+  "refresh fixes it".
+- **The injected stylesheet was a single point of failure.** It was appended once at
+  script load; if the document later lost it, nothing re-injected it, so the layout stayed
+  stock until a reload.
+
+### Added
+
+- **Per-instance enhancement.** The script now walks every model-menu instance and
+  enhances only the ones actually rendered; hidden/closed instances are left untouched, so
+  a hidden sibling can no longer steal the enhancement.
+- **Stylesheet self-healing + 1 s heartbeat.** `ensureStyle()` re-injects the stylesheet
+  whenever it is missing, and a state-gated 1-second heartbeat re-runs the whole pass, so
+  any silent loss (stylesheet removed, instance swapped, state cleared) recovers within a
+  second without user action.
+- **Diagnostics.** `window.pclModelPickerDiag()` now reports every instance (state,
+  filtering, rendered, rail, chips) plus stylesheet presence, heartbeat count and the last
+  self-heal event; `window.pclModelPickerLog()` returns the event ring buffer
+  (`style-injected`, `rail-created`, `chip-cleared-search`, `fallback-narrow`).
+
+### Changed
+
+- **The official search filter no longer reverts the layout to native.** Typing in the
+  model search keeps the two-column layout and the provider rail; groups with no visible
+  match are hidden instead. Clicking a rail chip while filtering clears the search first
+  and then applies the provider filter. The old `fallback-filter` state, which could get
+  stuck, is gone.
+- `scripts/pcl-patch.ps1` auto-selects the newest packaged `pcl-model-picker.v*.js`, so
+  future script bumps no longer require editing the installer.
+
+### Verified
+
+- Real Chromium DOM harness (managed browser, script loaded from the published repo):
+  baseline two-column; official search keeps two-column and recovers on clear;
+  stylesheet removed -> re-injected and `display: grid` restored within the heartbeat;
+  rail removed -> re-created; **hidden instance first + visible instance -> visible one
+  stays two-column** (the regression that motivated 1.4.0); visible instance rebuilt after
+  a hidden one exists -> still two-column; rebuild while open -> two-column.
+- Local deployment: `pcl-model-picker.v7.js?h=b58534b1`, watchdog `-Check` exit 0.
+
 ## [1.3.0] - 2026-09-09
 
 ### Added
