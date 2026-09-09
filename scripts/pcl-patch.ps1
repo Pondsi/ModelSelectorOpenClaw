@@ -19,8 +19,13 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$jsName = 'pcl-model-picker.v6.js'
 $srcDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+# 自动选用版本号最大的增强脚本，以后升级脚本无需改这里
+$jsFile = Get-ChildItem $srcDir -Filter 'pcl-model-picker.v*.js' -ErrorAction SilentlyContinue |
+    Sort-Object { [int]([regex]::Match($_.Name, 'v(\d+)\.js$').Groups[1].Value) } -Descending |
+    Select-Object -First 1
+if (-not $jsFile) { throw "缺少增强脚本 pcl-model-picker.v*.js（应与 pcl-patch.ps1 同目录）" }
+$jsName = $jsFile.Name
 $marker = 'pcl-model-picker'
 # 兼容任意历史版本号（以及带/不带内容指纹）的注入标签，升级脚本时自动原位替换
 $tagPattern = '<script defer src="\./assets/pcl-model-picker\.v\d+\.js(\?h=[0-9a-f]{8})?"></script><!-- pcl-model-picker -->'
