@@ -6,7 +6,7 @@ compatibility: "Any host that loads a standard SKILL.md and can run PowerShell 5
 allowed-tools: Bash Read Write
 metadata:
   author: "Pondsi"
-  version: "1.2.0"
+  version: "1.3.0"
   attribution: "Pondsi - attribution is mandatory for any use, including modified variants"
   license: "MIT"
 ---
@@ -96,6 +96,10 @@ To force an update check: `await window.pclModelPickerCheckUpdate()`.
 
 npm overwrites `dist/control-ui/`, so the tag and the asset disappear. Re-run the same
 command; it is idempotent and re-injects. Done when the script reports the tag replaced.
+
+The GitHub repository additionally ships an optional Windows auto-repair watchdog
+(`platform/pcl-watchdog.ps1`) that detects this wipe and re-runs the installer on a
+schedule. It is **not** part of this ClawHub artifact.
 
 ## Uninstall
 

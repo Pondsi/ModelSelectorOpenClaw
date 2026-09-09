@@ -4,6 +4,34 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-09-09
+
+### Added
+
+- **Auto-repair watchdog (GitHub package only, `platform/pcl-watchdog.ps1`).**
+  `npm i -g openclaw@<version>` replaces the whole `dist/control-ui/` directory, deleting
+  both the injected tag and the enhancement asset — the picker silently reverts to the
+  stock list. The watchdog compares the injected tag against the packaged script (filename
+  **and** content fingerprint) and re-runs the installer only when something is missing or
+  stale. Registered as the scheduled task `BigLobster-PclModelPickerRepair` (default every
+  15 minutes) it heals an upgrade within minutes; the enhancement's own self-update watchdog
+  then reloads the open tab, so no manual step is needed.
+  - `-Check` (exit `0` healthy / `10` needs repair), `-Repair`, `-Install`, `-Uninstall`,
+    `-Status`; log at `%USERPROFILE%\.openclaw\logs\pcl-model-picker-watchdog.log`.
+  - Read-only when healthy: it writes nothing unless the injection is actually missing.
+  - Not part of the ClawHub artifact; the repository README documents the boundary.
+
+### Verified
+
+- Watchdog exercised end-to-end: healthy `-Check` (exit 0) → simulated upgrade wipe
+  (tag and asset removed) → `-Check` exit 10 → `-Repair` restored the injection → `-Check`
+  exit 0 → `-Install` registered the task (next run confirmed by `schtasks`).
+- Compatibility re-checked against OpenClaw **2026.9.3**, which now renders the picker as a
+  controlled `<details>` (`?open=` driven by component state; the trigger carries
+  `--disabled`/`aria-disabled` until the session is ready). The enhancement does not depend
+  on click events: with the menu open the probe reports `state: "two-col"`, `railFound: true`
+  and 10 provider chips.
+
 ## [1.2.0] - 2026-09-09
 
 ### Added
