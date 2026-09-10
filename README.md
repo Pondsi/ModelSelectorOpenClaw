@@ -6,7 +6,7 @@
 <img alt="license" src="https://img.shields.io/badge/license-MIT-blue">
 <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20pwsh-lightgrey">
 <img alt="hosts" src="https://img.shields.io/badge/hosts-dsh%20%7C%20OpenClaw%20%7C%20Claude%20Code%20%7C%20Cursor-informational">
-<img alt="version" src="https://img.shields.io/badge/version-1.5.0-green">
+<img alt="version" src="https://img.shields.io/badge/version-1.5.1-green">
 </p>
 
 [English](#english) | [简体中文](#简体中文) | [繁體中文](#繁體中文) | [한국어](#한국어) | [Русский](#русский) | [日本語](#日本語) | [Español](#español) | [Français](#français)
@@ -114,7 +114,9 @@ Yes — and the footprint is deliberately tiny:
 | Delete older `pcl-model-picker.v*.js` | keeps the newest **two**, deletes only that pattern |
 
 - **No packaged code is modified** — no OpenClaw JS/CSS/service-worker file is touched.
-- **No network, no telemetry.** The injected script runs in your browser only.
+- **No external network, no telemetry.** The injected script runs in your browser only; its
+  only request is a **same-origin** `fetch('./')` used to detect server-side updates — no
+  third party is contacted and nothing leaves the machine.
 - **Scope:** the model picker's DOM/CSS. No session data, config, or credentials.
 - **Reversible:** `-Remove`, or reinstall OpenClaw and the stock UI is back.
 - **Lost on upgrade by design:** npm overwrites `dist/`; re-run the script to restore.
@@ -134,7 +136,7 @@ by itself, so an upgrade heals with no manual step.
 |---|---|---|
 | Contents | Full project (skill + `platform/` watchdog + `.github/` templates) | Portable core (`SKILL.md`, docs, `scripts/`, `sponsors/`) |
 | Use when | You want the repo, auto-repair, issue templates, history | Your agent installs skills from ClawHub |
-| Version | Same tag (`v1.5.0`) | Same tag (`v1.5.0`) |
+| Version | Same tag (`v1.5.1`) | Same tag (`v1.5.1`) |
 
 Both contain the same installer and enhancement script; the GitHub repo additionally ships
 Windows-only tooling (the auto-repair watchdog) and GitHub-only files (issue templates,
@@ -235,7 +237,7 @@ powershell -ExecutionPolicy Bypass -File scripts/pcl-patch.ps1 -Remove
 | 清理旧版本 js | 只删 `pcl-model-picker.v*.js`，**保留最近两版** |
 
 - **不修改** OpenClaw 任何打包代码（JS/CSS/Service Worker 全部原样）
-- **纯本地**：无网络请求、无遥测；增强脚本只在你的浏览器里运行
+- **纯本地**：无外部网络、无遥测；增强脚本只在你的浏览器里运行，唯一请求是同源 `fetch('./')`（用于感知服务端更新并重载页面），不联系任何第三方、数据不出本机
 - **作用面**：只改模型选择器的 DOM/CSS，不碰会话数据、配置、密钥
 - **随时可退**：`-Remove`，或重装 OpenClaw 自动还原官方界面
 - **升级后需重跑**：npm 会覆盖 `dist/`，这是预期行为
@@ -254,7 +256,7 @@ Windows 上可以让它全自动：GitHub 包自带 [`platform/pcl-watchdog.ps1`
 |---|---|---|
 | 内容 | 完整项目（技能 + `platform/` 看门狗 + `.github/` 模板） | 可移植核心（`SKILL.md`、文档、`scripts/`、`sponsors/`） |
 | 适合 | 想看仓库、要自动修复、提 issue、跟历史 | Agent 从 ClawHub 装技能 |
-| 版本 | 同一 tag（`v1.5.0`） | 同一 tag（`v1.5.0`） |
+| 版本 | 同一 tag（`v1.5.1`） | 同一 tag（`v1.5.1`） |
 
 两者含相同的安装脚本与增强脚本；GitHub 仓库额外包含 Windows 专属工具（自动修复看门狗）与
 GitHub 专属文件（issue 模板、安全策略）。

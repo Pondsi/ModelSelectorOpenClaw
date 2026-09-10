@@ -6,7 +6,7 @@ compatibility: "Any host that loads a standard SKILL.md and can run PowerShell 5
 allowed-tools: Bash Read Write
 metadata:
   author: "Pondsi"
-  version: "1.5.0"
+  version: "1.5.1"
   attribution: "Pondsi - attribution is mandatory for any use, including modified variants"
   license: "MIT"
 ---
@@ -67,9 +67,13 @@ picker with a provider navigation column**:
 > | Append/replace ONE `<script>` line at the end of `index.html` | first run saves `index.html.bak-pcl` next to it; idempotent; `-Remove` reverts |
 > | Copy `pcl-model-picker.v8.js` into `assets/` | versioned filename + content fingerprint in the URL |
 > | Delete older `pcl-model-picker.v*.js` files | keeps the latest TWO versions, deletes only files matching `pcl-model-picker.v*.js` |
+> | Poll `./` (same-origin app shell) every 5 min for update detection | browser-side only; same-origin `fetch('./',{cache:'no-store'})`; no external host, no telemetry |
 >
-> Nothing else is touched: no packaged JS/CSS/SW files are modified, no network access,
-> no telemetry. The injected script runs in the **browser** only, on the model picker DOM.
+> Nothing else is touched: no packaged JS/CSS/SW files are modified, no external network
+> access, no telemetry. The injected script runs in the **browser** only, on the model picker
+> DOM; its only network call is a **same-origin** `fetch('./')` (cache: no-store) used to
+> notice server-side updates and reload the tab — no external host is contacted and no data
+> leaves the machine.
 > The patch is lost when OpenClaw is upgraded (npm overwrites `dist/`); re-run to restore.
 > **Installing means accepting these local file modifications.**
 

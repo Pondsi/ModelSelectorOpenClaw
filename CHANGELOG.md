@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.1] - 2026-09-10
+
+### Fixed
+
+- **Documentation now matches behavior** (addresses a ClawHub SkillSpector finding,
+  "Underdeclared Capability"). Since 1.2.0 the enhancement polls the app shell with a
+  same-origin `fetch('./', { cache: 'no-store' })` to notice server-side updates, but
+  `SKILL.md`, `README.md` and `说明.md` still claimed "no network access". The disclosure now
+  states the same-origin poll explicitly (and lists it in the Disclosure table): same-origin
+  only, no external host, no telemetry, no data leaves the machine.
+
+### Verified
+
+- Privacy scan clean (repo + publish core); `node --check` clean; install/uninstall
+  round-trip re-verified; injected tag `pcl-model-picker.v8.js?h=84d1ba15` unchanged
+  (docs only — the browser script is byte-identical to v1.5.0).
+
 ## [1.5.0] - 2026-09-10
 
 ### Added
