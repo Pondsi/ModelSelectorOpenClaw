@@ -4,6 +4,33 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] - 2026-09-10
+
+### Added
+
+- **Resizable picker (both axes) with remembered size.** The menu now carries a small grip
+  in its bottom-right corner; drag it to grow or shrink the picker horizontally **and**
+  vertically (min 360×220, clamped to the viewport). The size is written to
+  `localStorage['pcl-model-picker-size']` when the drag ends and restored the next time the
+  picker opens, so a layout you like sticks. **Double-click the grip** to reset to the
+  default size.
+- **Long model names are readable.** Every model option now carries a `title` tooltip with
+  its full name, and the name container is allowed to shrink so truncation never distorts
+  the row — widen the picker (above) to read the whole id at a glance.
+- Diagnostics: `pclModelPickerDiag()` now also reports `storedSize` and, per instance,
+  `sized` and `grip`.
+
+### Changed
+
+- Enhancement file is now `pcl-model-picker.v8.js`. Sizing is driven by CSS custom
+  properties (`--pcl-w` / `--pcl-h`) with the v7 defaults as fallback, so if the app resets
+  inline styles the 1 s heartbeat restores the remembered size.
+
+### Verified
+
+- Local deployment: injected tag `pcl-model-picker.v8.js?h=84d1ba15`; the served asset
+  returns HTTP 200 and reports `VERSION = 8`; `node --check` clean.
+
 ## [1.4.0] - 2026-09-10
 
 ### Fixed
