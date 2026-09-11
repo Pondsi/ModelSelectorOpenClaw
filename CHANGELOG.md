@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 - **Documentation now matches behavior** (addresses a ClawHub SkillSpector finding,
   "Underdeclared Capability"). Since 1.2.0 the enhancement polls the app shell with a
   same-origin `fetch('./', { cache: 'no-store' })` to notice server-side updates, but
-  `SKILL.md`, `README.md` and `说明.md` still claimed "no network access". The disclosure now
+  `SKILL.md`, `README.md` and `璇存槑.md` still claimed "no network access". The disclosure now
   states the same-origin poll explicitly (and lists it in the Disclosure table): same-origin
   only, no external host, no telemetry, no data leaves the machine.
 
@@ -19,7 +19,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 - Privacy scan clean (repo + publish core); `node --check` clean; install/uninstall
   round-trip re-verified; injected tag `pcl-model-picker.v8.js?h=84d1ba15` unchanged
-  (docs only — the browser script is byte-identical to v1.5.0).
+  (docs only 鈥?the browser script is byte-identical to v1.5.0).
 
 ## [1.5.0] - 2026-09-10
 
@@ -27,13 +27,13 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 - **Resizable picker (both axes) with remembered size.** The menu now carries a small grip
   in its bottom-right corner; drag it to grow or shrink the picker horizontally **and**
-  vertically (min 360×220, clamped to the viewport). The size is written to
+  vertically (min 360脳220, clamped to the viewport). The size is written to
   `localStorage['pcl-model-picker-size']` when the drag ends and restored the next time the
   picker opens, so a layout you like sticks. **Double-click the grip** to reset to the
   default size.
 - **Long model names are readable.** Every model option now carries a `title` tooltip with
   its full name, and the name container is allowed to shrink so truncation never distorts
-  the row — widen the picker (above) to read the whole id at a glance.
+  the row 鈥?widen the picker (above) to read the whole id at a glance.
 - Diagnostics: `pclModelPickerDiag()` now also reports `storedSize` and, per instance,
   `sized` and `grip`.
 
@@ -105,7 +105,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 - **Auto-repair watchdog (GitHub package only, `platform/pcl-watchdog.ps1`).**
   `npm i -g openclaw@<version>` replaces the whole `dist/control-ui/` directory, deleting
-  both the injected tag and the enhancement asset — the picker silently reverts to the
+  both the injected tag and the enhancement asset 鈥?the picker silently reverts to the
   stock list. The watchdog compares the injected tag against the packaged script (filename
   **and** content fingerprint) and re-runs the installer only when something is missing or
   stale. Registered as the scheduled task `BigLobster-PclModelPickerRepair` (default every
@@ -118,9 +118,9 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Verified
 
-- Watchdog exercised end-to-end: healthy `-Check` (exit 0) → simulated upgrade wipe
-  (tag and asset removed) → `-Check` exit 10 → `-Repair` restored the injection → `-Check`
-  exit 0 → `-Install` registered the task (next run confirmed by `schtasks`).
+- Watchdog exercised end-to-end: healthy `-Check` (exit 0) 鈫?simulated upgrade wipe
+  (tag and asset removed) 鈫?`-Check` exit 10 鈫?`-Repair` restored the injection 鈫?`-Check`
+  exit 0 鈫?`-Install` registered the task (next run confirmed by `schtasks`).
 - Compatibility re-checked against OpenClaw **2026.9.3**, which now renders the picker as a
   controlled `<details>` (`?open=` driven by component state; the trigger carries
   `--disabled`/`aria-disabled` until the session is ready). The enhancement does not depend
@@ -133,7 +133,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 - **Self-update watchdog.** An already-open Control UI tab keeps running the script it
   loaded, so a freshly patched server looked "unpatched" until the user reloaded by hand
-  (symptom: click the picker → still the old layout; refresh → new layout). The enhancement
+  (symptom: click the picker 鈫?still the old layout; refresh 鈫?new layout). The enhancement
   now fetches the app shell (`./`, a network-first path the Service Worker never caches)
   30s after load and then every 5 minutes, parses the injected tag's version and content
   fingerprint, and reloads the page automatically when the server is newer.
@@ -158,7 +158,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Updated the attribution signature to `Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) — automatically committed by OpenClaw` across `README.md`, `SKILL.md`, `说明.md`, `SPONSORS.md` and this changelog.
+- Updated the attribution signature to `Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) 鈥?automatically committed by OpenClaw` across `README.md`, `SKILL.md`, `璇存槑.md`, `SPONSORS.md` and this changelog.
 
 ## [1.1.0] - 2026-09-09
 
@@ -175,7 +175,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 - **Silent disappearance of the enhancement on narrower viewports.** The old guard used a
   hard `MIN_WIDTH = 520`; high-DPI scaling, a narrow window or a split view drops
   `window.innerWidth` below 520 CSS px, at which point the script silently reverted to the
-  native flat list (`clearFilterState()`) — the user saw "the enhancement is gone" with no
+  native flat list (`clearFilterState()`) 鈥?the user saw "the enhancement is gone" with no
   hint. The threshold is now **340px**, and the provider column width is responsive
   (`grid-template-columns: clamp(84px, 26%, 132px) minmax(0, 1fr)`), so narrow layouts keep
   the two-column behaviour instead of collapsing.
@@ -201,7 +201,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
   `state: "two-col"`, `railFound: true`, 10 provider chips, two-column grid, and the
   per-chat account row hidden. Previously 480px fell back to the native list.
 - The fingerprint URL and the injected tag were confirmed on the live gateway
-  (`/assets/pcl-model-picker.v5.js?h=…` returns HTTP 200).
+  (`/assets/pcl-model-picker.v5.js?h=鈥 returns HTTP 200).
 
 ## [1.0.0] - 2026-09-09
 
@@ -209,12 +209,12 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 - Two-column master-detail model picker for the OpenClaw Control UI chat input:
   provider navigation chips (left) + the selected provider's models only (right),
-  each column an independent scroll container (structural CSS Grid — no scroll coupling).
+  each column an independent scroll container (structural CSS Grid 鈥?no scroll coupling).
 - Hides the official per-chat account control (`.chat-model-account`, e.g. `deepseek:default`)
-  inside the model menu — unrelated to provider/model picking.
+  inside the model menu 鈥?unrelated to provider/model picking.
 - Official design tokens throughout (`--bg-hover`, `--accent` mix, `--border`,
   `--scrollbar-*`); dark/light/custom `data-theme` follows automatically.
-- State-gated DOM writes (zero no-op writes) — no MutationObserver self-excitation.
+- State-gated DOM writes (zero no-op writes) 鈥?no MutationObserver self-excitation.
 - Idempotent installer `scripts/pcl-patch.ps1`: auto-detects the OpenClaw Control UI
   directory (npm root, common prefixes, CLI on PATH, `-Dist` override), backs up
   `index.html` on first run, replaces the injected tag in place across versions,
@@ -232,4 +232,5 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) — automatically committed by OpenClaw
+Pondsi (+MiMo-v2.5 +deepseek-v4.1-flash-expires-on-0910 +GLM5.3-flash) 鈥?automatically committed by OpenClaw
+
