@@ -153,15 +153,12 @@ if ($Uninstall) {
 }
 
 if ($Install) {
-    # Launch through the bundled VBS wrapper: a scheduled task that runs powershell.exe
-    # directly makes Task Scheduler allocate a console window that can flash on screen
-    # every cycle. wscript.exe is a GUI-subsystem host (no console) and
-    # WshShell.Run(..., 0, ...) keeps the PowerShell window hidden, so the task is
-    # completely invisible.
-    $launcher = Join-Path $scriptDir 'pcl-run-hidden.vbs'
-    if (-not (Test-Path $launcher)) { throw "silent launcher not found: $launcher" }
-    $exe = Join-Path $env:SystemRoot 'System32\wscript.exe'
-    $argument = '//B //nologo "{0}"' -f $launcher
+    # Launch through conhost.exe --headless: no console window, no VBScript dependency.
+    # conhost.exe --headless creates a headless console host (Windows 11+),
+    # eliminating both the brief flash and the VBScriptDeprecationAlert warnings.
+    $exe = Join-Path $env:SystemRoot 'System32\conhost.exe'
+    $psScript = Join-Path $scriptDir 'pcl-watchdog.ps1'
+    $argument = '--headless powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "{0}" -Repair -Quiet' -f $psScript
     $ok = $false
     try {
         $action = New-ScheduledTaskAction -Execute $exe -Argument $argument
